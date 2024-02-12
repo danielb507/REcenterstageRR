@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -59,10 +60,10 @@ import java.util.List;
 @Autonomous(name = "RedAudience", group = "Concept")
 public class RedAudience extends LinearOpMode {
 
-    private DcMotor frontLeft = null;
-    private DcMotor frontRight = null;
-    private DcMotor backLeft = null;
-    private DcMotor backRight = null;
+    private DcMotorEx leftFront = null;
+    private DcMotorEx rightRear = null;
+    private DcMotorEx leftRear = null;
+    private DcMotorEx rightFront = null;
     private DcMotor Intake = null;
 
     private CRServo wheel_bucket;
@@ -111,10 +112,10 @@ public class RedAudience extends LinearOpMode {
 
         initTfod();
 
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft"); //frontleft, port 0
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");  //frontright, port 1
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft"); //backleft, port 3
-        backRight = hardwareMap.get(DcMotor.class, "backRight");  //backright, port 2
+        leftFront = hardwareMap.get(DcMotorEx.class, "front_left");
+        leftRear = hardwareMap.get(DcMotorEx.class, "rear_left");
+        rightRear = hardwareMap.get(DcMotorEx.class, "rear_right");
+        rightFront = hardwareMap.get(DcMotorEx.class, "front_right");
         Intake = hardwareMap.get(DcMotor.class, "Intake");  //Intake
         slide = hardwareMap.get(DcMotor.class, "slide");
         left_lift = hardwareMap.get(DcMotor.class, "left_lift");
@@ -130,10 +131,10 @@ public class RedAudience extends LinearOpMode {
 
 
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
         Intake.setDirection(DcMotor.Direction.FORWARD);
         slide.setDirection(DcMotor.Direction.REVERSE);
 
@@ -172,6 +173,8 @@ public class RedAudience extends LinearOpMode {
 
 
                 drive.followTrajectory(trajStart);
+
+                sleep(100000);
 
 
                 if (spikeLocation() == 3) {
@@ -344,37 +347,40 @@ public class RedAudience extends LinearOpMode {
     public void driveForward(double distance, double power) {
 
         //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-        frontLeft.setPower(power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(power);
+        rightFront.setPower(power);
+        leftFront.setPower(power);
+        leftRear.setPower(power);
+        rightRear.setPower(power);
 
-        while (frontRight.getCurrentPosition() < (distance - 10)) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (rightRear.getCurrentPosition() < (distance - 10)) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        while (frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
@@ -383,31 +389,31 @@ public class RedAudience extends LinearOpMode {
     public void strafeRight(double distance, double power) {
 
         //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeft.setPower(power);
-        frontRight.setPower(-power);
-        backLeft.setPower(-power);
-        backRight.setPower(power);
+        leftFront.setPower(power);
+        rightFront.setPower(-power);
+        leftRear.setPower(-power);
+        rightRear.setPower(power);
 
-        while (-frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (-rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
@@ -415,31 +421,31 @@ public class RedAudience extends LinearOpMode {
     public void strafeLeft(double distance, double power) {
 
         //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeft.setPower(-power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(-power);
+        leftFront.setPower(-power);
+        rightFront.setPower(power);
+        leftRear.setPower(power);
+        rightRear.setPower(-power);
 
-        while (frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
@@ -448,32 +454,31 @@ public class RedAudience extends LinearOpMode {
 
     public void driveBackward(double distance, double power) {
 
-        //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        frontLeft.setPower(-power);
-        frontRight.setPower(-power);
-        backLeft.setPower(-power);
-        backRight.setPower(-power);
+        leftFront.setPower(-power);
+        rightFront.setPower(-power);
+        leftRear.setPower(-power);
+        rightRear.setPower(-power);
 
-        while (-frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (-rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
@@ -519,29 +524,30 @@ public class RedAudience extends LinearOpMode {
     public void turnRight(double distance, double power) {
 
         //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        frontLeft.setPower(power * -1);
-        frontRight.setPower(power);
-        backLeft.setPower(power * -1);
-        backRight.setPower(power);
 
-        while (-frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        leftFront.setPower(-power);
+        rightFront.setPower(power);
+        leftRear.setPower(-power);
+        rightRear.setPower(power);
+
+        while (rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
@@ -550,29 +556,29 @@ public class RedAudience extends LinearOpMode {
     public void turnLeft(double distance, double power) {
 
         //Reset Encoders
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        frontLeft.setPower(power);
-        frontRight.setPower(power * -1);
-        backLeft.setPower(power);
-        backRight.setPower(power * -1);
+        leftFront.setPower(power);
+        rightFront.setPower(-power);
+        leftRear.setPower(power);
+        rightRear.setPower(-power);
 
-        while (frontRight.getCurrentPosition() < distance) {
-            telemetry.addData("Left Encoder", frontRight.getCurrentPosition());
+        while (rightFront.getCurrentPosition() < distance) {
+            telemetry.addData("Left Encoder", rightFront.getCurrentPosition());
             telemetry.update();
         }
 
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+        rightFront.setPower(0);
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
 
         sleep(500);
 
