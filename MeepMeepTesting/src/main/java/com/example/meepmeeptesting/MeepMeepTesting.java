@@ -10,15 +10,83 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
 
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(650);
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(30, 30, Math.toRadians(180), Math.toRadians(180), 14.75)
-                .setDimensions(16.75, 17)
+                .setDimensions(17, 17)
                 .setStartPose(new Pose2d(-35, 60, Math.toRadians(-90)))
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-35, 60, Math.toRadians(-90)))
-                                .splineTo(new Vector2d(25, 7), Math.toRadians(90))
+                        drive.trajectorySequenceBuilder(new Pose2d(10, 60, Math.toRadians(90)))
+
+
+                                // TOPLEFT -- Pose2d(-35, 60, Math.toRadians(90)
+                                // ID 1
+                                /*
+                                .back(15)
+                                .strafeLeft(10)
+                                .back(5)
+                                .forward(5)
+                                .strafeRight(10)
+                                .back(35)
+                                .strafeRight(90)
+                                 */
+
+                                // Id 2
+
+                                /*
+                                .back(30)
+                                .forward(10)
+                                .strafeLeft(15)
+                                .back(28)
+                                .strafeRight(90)
+                                 */
+
+                                //ID 3
+
+                                /*
+                                .back(25)
+                                .turn(Math.toRadians(90))
+                                .back(5)
+                                .forward(20)
+                                .strafeLeft(22)
+                                .back(100)
+                                 */
+
+                                //TopRight -- Pose2d(35, 60, Math.toRadians(90)
+
+                                // Id Left
+
+                                .back(27)
+                                .turn(Math.toRadians(-90))
+                                .back(5)
+                                .forward(5)
+                                .strafeLeft(27)
+                                .forward(37)
+
+
+
+
+                                //ID Middle
+                                /*
+                                .back(30)
+                                .forward(27)
+                                .strafeRight(40)
+
+                                 */
+
+                                // ID Right
+                                /*
+                                .back(10)
+                                .strafeRight(10)
+                                .back(10)
+                                .forward(20)
+                                .strafeRight(30)
+
+                                 */
+
+
+
                                 .build()
                 );
 
