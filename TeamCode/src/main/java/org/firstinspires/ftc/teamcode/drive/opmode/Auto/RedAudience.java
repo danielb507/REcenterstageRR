@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
@@ -156,9 +157,70 @@ public class RedAudience extends LinearOpMode {
 
 
 
-        Trajectory trajStart = drive.trajectoryBuilder(new Pose2d())
-                .forward(4)
+
+        //---------------------ID 1 Trajectories-----------------
+
+
+
+        Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
+                .back(25)
                 .build();
+
+        Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
+                .strafeRight(7)
+                .build();
+
+        Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
+                .forward(7)
+                .build();
+
+
+        Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
+                .strafeRight(34)
+                .build();
+
+
+
+        // -------------------Middle Trajectories-------------
+        Trajectory middle_traj1 = drive.trajectoryBuilder(new Pose2d())
+                .back(30)
+                .build();
+        Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
+                .forward(5)
+                .build();
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_traj2.end())
+                .strafeRight(15)
+                .build();
+        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_traj3.end())
+                .back(25)
+                .build();
+        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
+                .strafeLeft(35)
+                .build();
+        Trajectory middle_traj6 = drive.trajectoryBuilder(middle_traj5.end())
+                .strafeLeft(35)
+                .build();
+        // -------------------- ID 3 Trajectories -----------
+        Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
+                .back(25)
+                .build();
+        TrajectorySequence right_traj2 = drive.trajectorySequenceBuilder(right_traj1.end())
+                .turn(Math.toRadians(-90))
+                .build();
+        Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
+                .back(5)
+                .build();
+        Trajectory right_traj4 = drive.trajectoryBuilder(right_traj3.end())
+                .forward(10)
+                .build();
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
+                .strafeRight(30)
+                .build();
+        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
+                .back(36)
+                .build();
+
+
 
 
 
@@ -173,23 +235,40 @@ public class RedAudience extends LinearOpMode {
                 telemetry.update();
 
 
-                drive.followTrajectory(trajStart);
 
-                sleep(100000);
 
 
                 if (spikeLocation() == 3) {
 
+                    drive.followTrajectory(right_traj1);
+                    drive.followTrajectorySequence(right_traj2);
+                    drive.followTrajectory(right_traj3);
+                    drive.followTrajectory(right_traj4);
+                    drive.followTrajectory(right_traj5);
+                    drive.followTrajectory(right_traj6);
 
-
+                    sleep(100000);
 
 
                 } else if (spikeLocation() == 2) {
 
+                    drive.followTrajectory(middle_traj1);
+                    drive.followTrajectory(middle_traj2);
+                    drive.followTrajectory(middle_traj3);
+                    drive.followTrajectory(middle_traj4);
+                    drive.followTrajectory(middle_traj5);
+                    drive.followTrajectory(middle_traj6);
+
+                    sleep(100000);
 
 
 
                 } else {
+
+                    drive.followTrajectory(left_traj1);
+                    drive.followTrajectory(left_traj2);
+                    drive.followTrajectory(left_traj3);
+                    drive.followTrajectory(left_traj4);
 
 
 
