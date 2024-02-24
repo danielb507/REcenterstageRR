@@ -58,8 +58,8 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Autonomous(name = "RedAudience", group = "Concept")
-public class RedAudience extends LinearOpMode {
+@Autonomous(name = "BlueAudience", group = "Concept")
+public class BlueAudience extends LinearOpMode {
 
     private DcMotorEx leftFront = null;
     private DcMotorEx rightRear = null;
@@ -89,14 +89,13 @@ public class RedAudience extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "red_hatv3.tflite";
+    private static final String TFOD_MODEL_ASSET = "Blue_hat.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Red_hat.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "red_hat",
-            "r",
+            "blue_hat",
     };
 
     /**
@@ -163,7 +162,7 @@ public class RedAudience extends LinearOpMode {
 
 
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(30)
+                .back(28)
                 .build();
 
         TrajectorySequence left_traj2 = drive.trajectorySequenceBuilder(left_traj1.end())
@@ -171,18 +170,28 @@ public class RedAudience extends LinearOpMode {
                 .build();
 
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .back(4)
+                .back(7)
                 .build();
         Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .forward(4)
+                .forward(7)
                 .build();
 
-        Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
-                .strafeLeft(25)
+        TrajectorySequence left_traj5 = drive.trajectorySequenceBuilder(left_traj4.end())
+                .turn(Math.toRadians(-90))
                 .build();
+
         Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
-                .forward(80)
+                .back(25)
                 .build();
+
+        TrajectorySequence left_traj7 = drive.trajectorySequenceBuilder(left_traj6.end())
+                .turn(Math.toRadians(-90))
+                .build();
+
+        Trajectory left_traj8 = drive.trajectoryBuilder(left_traj7.end())
+                .forward(9)
+                .build();
+
 
 
 
@@ -194,35 +203,38 @@ public class RedAudience extends LinearOpMode {
                 .forward(5)
                 .build();
         Trajectory middle_traj3 = drive.trajectoryBuilder(middle_traj2.end())
-                .strafeRight(15)
+                .strafeLeft(15)
                 .build();
         Trajectory middle_traj4 = drive.trajectoryBuilder(middle_traj3.end())
                 .back(25)
                 .build();
         TrajectorySequence middle_traj5 = drive.trajectorySequenceBuilder(middle_traj4.end())
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .build();
         Trajectory middle_traj6 = drive.trajectoryBuilder(middle_traj5.end())
                 .back(100)
                 .build();
         // -------------------- ID 3 Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(25)
+                .back(17)
                 .build();
-        TrajectorySequence right_traj2 = drive.trajectorySequenceBuilder(right_traj1.end())
-                .turn(Math.toRadians(-90))
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_traj1.end())
+                .strafeLeft(13)
                 .build();
         Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .back(5)
+                .forward(5)
                 .build();
         Trajectory right_traj4 = drive.trajectoryBuilder(right_traj3.end())
-                .forward(10)
+                .strafeRight(15)
                 .build();
         Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
-                .strafeRight(27)
+                .back(38)
                 .build();
-        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .back(100)
+        TrajectorySequence right_traj6 = drive.trajectorySequenceBuilder(right_traj5.end())
+                .turn(Math.toRadians(-90))
+                .build();
+        Trajectory right_traj7 = drive.trajectoryBuilder(right_traj6.end())
+                .back(90)
                 .build();
 
 
@@ -246,11 +258,12 @@ public class RedAudience extends LinearOpMode {
                 if (spikeLocation() == 3) {
 
                     drive.followTrajectory(right_traj1);
-                    drive.followTrajectorySequence(right_traj2);
+                    drive.followTrajectory(right_traj2);
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectory(right_traj4);
                     drive.followTrajectory(right_traj5);
-                    drive.followTrajectory(right_traj6);
+                    drive.followTrajectorySequence(right_traj6);
+                    drive.followTrajectory(right_traj7);
 
                     sleep(100000);
 
@@ -275,8 +288,10 @@ public class RedAudience extends LinearOpMode {
                     drive.followTrajectorySequence(left_traj2);
                     drive.followTrajectory(left_traj3);
                     drive.followTrajectory(left_traj4);
-                    drive.followTrajectory(left_traj5);
+                    drive.followTrajectorySequence(left_traj5);
                     drive.followTrajectory(left_traj6);
+                    drive.followTrajectorySequence(left_traj7);
+                    drive.followTrajectory(left_traj8);
 
 
 
@@ -362,7 +377,7 @@ public class RedAudience extends LinearOpMode {
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.80f);
+        //tfod.setMinResultConfidence(0.75f);
 
         // Disable or re-enable the TFOD processor at any time.
         //visionPortal.setProcessorEnabled(tfod, true);
