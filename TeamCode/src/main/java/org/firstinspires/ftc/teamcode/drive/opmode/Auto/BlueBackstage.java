@@ -65,22 +65,17 @@ public class BlueBackstage extends LinearOpMode {
     private DcMotorEx rightRear = null;
     private DcMotorEx leftRear = null;
     private DcMotorEx rightFront = null;
-    private DcMotor Intake = null;
-
-    private CRServo wheel_bucket;
-
-    private Servo left_servo_lift;
-
-    private Servo right_servo_lift;
-
-    private Servo flipper_bucket;
-
-    private DcMotor slide = null;
-    private CRServo drone = null;
-
-    private DcMotor left_lift = null;
-
-    private DcMotor right_lift = null;
+    private Servo launch = null;
+    private DcMotor intake = null;
+    private DcMotor Rarm = null;
+    private DcMotor Larm = null;
+    private Servo bar = null;
+    private Servo LClaw = null;
+    private Servo RClaw = null;
+    private DcMotor sArm = null;
+    private Servo Funnel = null;
+    private Servo Door = null;
+    private CRServo Outake = null;
 
 
 
@@ -89,13 +84,13 @@ public class BlueBackstage extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "Blue_hat.tflite";
+    private static final String TFOD_MODEL_ASSET = "Blue_Box.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Red_hat.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "blue_hat",
+            "blue box",
     };
 
     /**
@@ -117,18 +112,17 @@ public class BlueBackstage extends LinearOpMode {
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        Intake = hardwareMap.get(DcMotor.class, "Intake");
-        slide = hardwareMap.get(DcMotor.class, "slide");
-        left_lift = hardwareMap.get(DcMotor.class, "left_lift");
-        right_lift =  hardwareMap.get(DcMotor.class, "right_lift");
-
-
-        wheel_bucket = hardwareMap.get(CRServo.class, "wheel_bucket"); // Port 5 Expansion Hub
-        flipper_bucket = hardwareMap.get(Servo.class, "flipper_bucket"); // port 4 Expansion Hub
-        drone = hardwareMap.get(CRServo.class, "drone");
-
-        left_servo_lift = hardwareMap.get(Servo.class, "left_servo_lift");
-        right_servo_lift = hardwareMap.get(Servo.class, "right_servo_lift");
+        launch = hardwareMap.get(Servo.class, "launch");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        Rarm = hardwareMap.get(DcMotor.class, "Rarm");
+        Larm = hardwareMap.get(DcMotor.class, "Larm");
+        bar = hardwareMap.get(Servo.class, "bar");
+        RClaw = hardwareMap.get(Servo.class, "RClaw");
+        LClaw = hardwareMap.get(Servo.class, "LClaw");
+        sArm = hardwareMap.get(DcMotor.class, "sArm");
+        Funnel = hardwareMap.get(Servo.class, "Funnel");
+        Door = hardwareMap.get(Servo.class, "Door");
+        Outake = hardwareMap.get(CRServo.class, "Outake");
 
 
 
@@ -136,13 +130,10 @@ public class BlueBackstage extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.FORWARD);
-        Intake.setDirection(DcMotor.Direction.FORWARD);
-        slide.setDirection(DcMotor.Direction.REVERSE);
-
-
-
-
-        drone.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        Rarm.setDirection(DcMotor.Direction.FORWARD);
+        Larm.setDirection(DcMotor.Direction.REVERSE);
+        sArm.setDirection(DcMotor.Direction.FORWARD);
 
 
         // Wait for the DS start button to be touched.
@@ -162,53 +153,30 @@ public class BlueBackstage extends LinearOpMode {
 
 
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(15)
+                .forward(28)
                 .build();
-
-
         Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
-                .strafeRight(5)
+                .forward(3)
                 .build();
-
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .forward(13)
+                .strafeRight(15)
                 .build();
-
-
         Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .strafeRight(34)
+                .forward(10)
                 .build();
-
+        Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
+                .strafeLeft(25)
+                .build();
 
 
         // -------------------Middle Trajectories-------------
         Trajectory middle_traj1 = drive.trajectoryBuilder(new Pose2d())
                 .back(30)
                 .build();
-        Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
-                .forward(27)
-                .build();
-        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_traj2.end())
-                .strafeRight(40)
-                .build();
+
         // -------------------- ID 2 Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
                 .back(20)
-                .build();
-        TrajectorySequence right_traj2 = drive.trajectorySequenceBuilder(right_traj1.end())
-                .turn(Math.toRadians(-90))
-                .build();
-        Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .back(5)
-                .build();
-        Trajectory right_traj4 = drive.trajectoryBuilder(right_traj3.end())
-                .forward(10)
-                .build();
-        Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
-                .strafeLeft(20)
-                .build();
-        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .forward(36)
                 .build();
 
 
@@ -229,14 +197,13 @@ public class BlueBackstage extends LinearOpMode {
 
 
 
-                if (spikeLocation() == 3) {
+                if (spikeLocation() == 1) {
 
-                    drive.followTrajectory(right_traj1);
-                    drive.followTrajectorySequence(right_traj2);
-                    drive.followTrajectory(right_traj3);
-                    drive.followTrajectory(right_traj4);
-                    drive.followTrajectory(right_traj5);
-                    drive.followTrajectory(right_traj6);
+                    drive.followTrajectory(left_traj1);
+                    drive.followTrajectory(left_traj2);
+                    drive.followTrajectory(left_traj3);
+                    drive.followTrajectory(left_traj4);
+                    drive.followTrajectory(left_traj5);
 
                     sleep(100000);
 
@@ -244,8 +211,8 @@ public class BlueBackstage extends LinearOpMode {
                 } else if (spikeLocation() == 2) {
 
                     drive.followTrajectory(middle_traj1);
-                    drive.followTrajectory(middle_traj2);
-                    drive.followTrajectory(middle_traj3);
+                    //drive.followTrajectory(middle_traj2);
+                   // drive.followTrajectory(middle_traj3);
 
                     sleep(100000);
 
@@ -373,7 +340,7 @@ public class BlueBackstage extends LinearOpMode {
 
     }   // end method telemetryTfod()
 
-    public void intake(String mode, double power){
+    /*public void intake(String mode, double power){
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (mode == "intake"){
@@ -387,7 +354,7 @@ public class BlueBackstage extends LinearOpMode {
             Intake.setPower(0);
         }
 
-    }
+    }*/
     private double spikeLocation() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
@@ -396,14 +363,14 @@ public class BlueBackstage extends LinearOpMode {
 
         for (Recognition recognition : currentRecognitions) {
 
-            if (recognition.getLeft() <= 322) {
-                location = 2;
+            if (recognition.getLeft() <= 263) {
+                location = 1;
                 telemetry.addData("Spike mark location: ", "center");
-            } else if (recognition.getLeft() > 322) {
-                location = 3;
+            } else if (recognition.getLeft() > 263) {
+                location = 2;
                 telemetry.addData("Spike mark location: ", "right");
             } else {
-                location = 1;
+                location = 3;
                 telemetry.addData("Spike mark location: ", "left");
             }
 
@@ -412,7 +379,7 @@ public class BlueBackstage extends LinearOpMode {
         return location;
     }
 
-
+/*
     public void armDown(double distance, double power) {
 
         //Reset Encoders
@@ -459,6 +426,6 @@ public class BlueBackstage extends LinearOpMode {
 
         sleep(1000);
 
-    }
+    }*/
 
 } // end class

@@ -40,13 +40,13 @@ public class DriveConstants {
      * These are physical constants that can be determined from your robot (including the track
      * width; it will be tune empirically later although a rough estimate is important). Users are
      * free to chose whichever linear distance unit they would like so long as it is consistently
-     * used. The default values were selected with inches in mind. Road runner uses radians for
+     * used. The defaul  t values were selected with inches in mind. Road runner uses radians for
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.88976; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH =  16.06; // in
+    public static double TRACK_WIDTH =  12; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -54,9 +54,9 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.01699;
-    public static double kA = 0.00023;//  0.00027
-    public static double kStatic = 0.07827; //0.09440
+    public static double kV = 0.01600;
+    public static double kA = 0.00017;//  0.00027
+    public static double kStatic = 0.08457; //0.09440
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -67,7 +67,7 @@ public class DriveConstants {
      */
     public static double MAX_VEL = 54.044;
     public static double MAX_ACCEL = 45;
-    public static double MAX_ANG_VEL = Math.toRadians(234.94);
+    public static double MAX_ANG_VEL = Math.toRadians(215.55007908148409);
     public static double MAX_ANG_ACCEL = Math.toRadians(275);
 
     /*
