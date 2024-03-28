@@ -77,7 +77,14 @@ public class BlueBackstage extends LinearOpMode {
     private Servo Door = null;
     private CRServo Outake = null;
 
-
+    static final double     COUNTS_PER_MOTOR_REV    = 28 ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
+    static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.45;
+    static final double     TURN_SPEED              = 0.3;
+    static final double     SLOW_SPEED = 0.3;
 
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -135,7 +142,13 @@ public class BlueBackstage extends LinearOpMode {
         Larm.setDirection(DcMotor.Direction.REVERSE);
         sArm.setDirection(DcMotor.Direction.FORWARD);
 
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
@@ -143,12 +156,14 @@ public class BlueBackstage extends LinearOpMode {
         waitForStart();
 
 
+
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
 
 
 
-        //---------------------ID 1 Trajectories-----------------
+        //---------------------Left Trajectories-----------------
 
 
 
@@ -174,12 +189,28 @@ public class BlueBackstage extends LinearOpMode {
                 .back(30)
                 .build();
 
-        // -------------------- ID 2 Trajectories -----------
+        // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(20)
+                .forward(28)
                 .build();
+        TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
+                .turn(Math.toRadians(-90))
+                .build();
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_trajTurn.end())
+                .forward(2)
+                .build();
+        Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
+                .back(15)
+                .build();
+        TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
+                .turn(Math.toRadians(-175))
+                .build();
+        Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
+                .forward(17)
+                .addTemporalMarker(0.1, () -> {
 
-
+                })
+                .build();
 
 
 
@@ -220,10 +251,13 @@ public class BlueBackstage extends LinearOpMode {
 
                 } else {
 
-                    drive.followTrajectory(left_traj1);
-                    drive.followTrajectory(left_traj2);
-                    drive.followTrajectory(left_traj3);
-                    drive.followTrajectory(left_traj4);
+                    drive.followTrajectory(right_traj1);
+                    drive.followTrajectorySequence(right_trajTurn);
+                    drive.followTrajectory(right_traj2);
+                    drive.followTrajectory(right_traj3);
+                    drive.followTrajectorySequence(right_trajTurn2);
+                    drive.followTrajectory(right_traj4);
+                    armpose(-4);
 
 
 
@@ -359,19 +393,19 @@ public class BlueBackstage extends LinearOpMode {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
 
-        double location = 1;
+        double location = 3;
 
         for (Recognition recognition : currentRecognitions) {
 
             if (recognition.getLeft() <= 263) {
                 location = 1;
-                telemetry.addData("Spike mark location: ", "center");
+                telemetry.addData("Spike mark location: ", "left");
             } else if (recognition.getLeft() > 263) {
                 location = 2;
-                telemetry.addData("Spike mark location: ", "right");
+                telemetry.addData("Spike mark location: ", "middle");
             } else {
                 location = 3;
-                telemetry.addData("Spike mark location: ", "left");
+                telemetry.addData("Spike mark location: ", "right");
             }
 
         }   // end for() loop
@@ -427,5 +461,123 @@ public class BlueBackstage extends LinearOpMode {
         sleep(1000);
 
     }*/
+public void encoderDriveArm(double speed,
+                            double Larminches, double Rarminches) {
+    int newLarmtarget;
+    int newRarmtarget;
 
+    // Ensure that the opmode is still active
+
+    // Determine new target position, and pass to motor controller
+    newLarmtarget = Larm.getCurrentPosition() + (int)(Larminches * COUNTS_PER_INCH);
+    newRarmtarget = Rarm.getCurrentPosition() + (int)(Rarminches * COUNTS_PER_INCH);
+
+
+    Larm.setTargetPosition(newLarmtarget);
+    Rarm.setTargetPosition(newRarmtarget);
+
+
+    // Turn On RUN_TO_POSITION
+    Larm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    Rarm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+    // reset the timeout time and start motion
+    Larm.setPower(Math.abs(speed));
+    Rarm.setPower(Math.abs(speed));
+
+
+    // keep looping while we are still active, and there is time left, and both motors are running.
+    // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+    // its target position, the motion will stop.  This is "safer" in the event that the robot will
+    // always end the motion as soon as possible.
+    // However, if you require that BOTH motors have finished their moves before the robot continues
+    // onto the next step, use (isBusy() || isBusy()) in the loop test.
+    while (opModeIsActive() &&
+            (Larm.isBusy() && Rarm.isBusy())) {
+
+        // Display it for the driver.
+        telemetry.update();
+    }
+
+    // Stop all motion;
+    Larm.setPower(0);
+    Rarm.setPower(0);
+
+
+    // Turn off RUN_TO_POSITION
+    Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+}
+    private void runEncoder(DcMotor motor, int newMotorTarget, double speed){
+
+        // Ensure that the opmode is still active
+
+        motor.setTargetPosition(newMotorTarget);
+
+        // Turn On RUN_TO_POSITION
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // reset the timeout time and start motion.
+        motor.setPower(Math.abs(speed));
+
+        // keep looping while we are still active, and there is time left, and both motors are running.
+        // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+        // its target position, the motion will stop.  This is "safer" in the event that the robot will
+        // always end the motion as soon as possible.
+        // However, if you require that BOTH motors have finished their moves before the robot continues
+        // onto the next step, use (isBusy() || isBusy()) in the loop test.
+        while (opModeIsActive() && motor.isBusy()) {
+
+            // Display it for the driver.
+            telemetry.update();
+        }
+
+        // Stop all motion;
+        motor.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void armUp(double inches){
+        encoderDriveArm(DRIVE_SPEED, -inches, -inches);
+    }
+    public void armDown(double inches){
+        encoderDriveArm(SLOW_SPEED, inches, inches);
+    }
+    public void armpose(int pose){
+        double ticks = 22.76;
+        double armAngle = Larm.getCurrentPosition() / ticks - 25;
+        while (armAngle != pose) {
+            armAngle = Larm.getCurrentPosition() / ticks - 25;
+            if (pose < armAngle + 1 && pose > armAngle - 1) {// Stop arm movement within a 4 degree range
+                Larm.setPower(0);
+                Rarm.setPower(0);
+                break;
+
+            } else if (pose > armAngle + 8 || pose < armAngle - 8) {//  Far and fast arm move into position within an infinite range
+                if (pose < armAngle) {
+                    Larm.setPower(1);
+                    Rarm.setPower(1);
+                }
+                if (pose > armAngle) {
+                    Larm.setPower(-1);
+                    Rarm.setPower(-1);
+                }
+
+            } else { //Close and slow arm move into position if arm is in a 16 degree range
+                if (pose < armAngle) {
+                    Larm.setPower(.2);
+                    Rarm.setPower(.2);
+                }
+                if (pose > armAngle) {
+                    Larm.setPower(-.2);
+                    Rarm.setPower(-.2);
+                }
+
+            }
+        }
+    }
 } // end class
