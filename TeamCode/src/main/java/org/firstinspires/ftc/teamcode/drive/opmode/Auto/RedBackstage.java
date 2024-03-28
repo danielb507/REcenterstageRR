@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -65,38 +64,39 @@ public class RedBackstage extends LinearOpMode {
     private DcMotorEx rightRear = null;
     private DcMotorEx leftRear = null;
     private DcMotorEx rightFront = null;
-    private DcMotor Intake = null;
+    private Servo launch = null;
+    private DcMotor intake = null;
+    private DcMotor Rarm = null;
+    private DcMotor Larm = null;
+    private Servo bar = null;
+    private Servo LClaw = null;
+    private Servo RClaw = null;
+    private DcMotor sArm = null;
+    private Servo Funnel = null;
+    private Servo Door = null;
+    private CRServo Outake = null;
 
-    private CRServo wheel_bucket;
-
-    private Servo left_servo_lift;
-
-    private Servo right_servo_lift;
-
-    private Servo flipper_bucket;
-
-    private DcMotor slide = null;
-    private CRServo drone = null;
-
-    private DcMotor left_lift = null;
-
-    private DcMotor right_lift = null;
-
-
+    static final double     COUNTS_PER_MOTOR_REV    = 28 ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
+    static final double     WHEEL_DIAMETER_INCHES   = 3.75 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.45;
+    static final double     TURN_SPEED              = 0.3;
+    static final double     SLOW_SPEED = 0.3;
 
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "red_hatv3.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Box.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Red_hat.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "red_hat",
-            "r",
+            "red box",
     };
 
     /**
@@ -118,18 +118,17 @@ public class RedBackstage extends LinearOpMode {
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        Intake = hardwareMap.get(DcMotor.class, "Intake");
-        slide = hardwareMap.get(DcMotor.class, "slide");
-        left_lift = hardwareMap.get(DcMotor.class, "left_lift");
-        right_lift =  hardwareMap.get(DcMotor.class, "right_lift");
-
-
-        wheel_bucket = hardwareMap.get(CRServo.class, "wheel_bucket"); // Port 5 Expansion Hub
-        flipper_bucket = hardwareMap.get(Servo.class, "flipper_bucket"); // port 4 Expansion Hub
-        drone = hardwareMap.get(CRServo.class, "drone");
-
-        left_servo_lift = hardwareMap.get(Servo.class, "left_servo_lift");
-        right_servo_lift = hardwareMap.get(Servo.class, "right_servo_lift");
+        launch = hardwareMap.get(Servo.class, "launch");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        Rarm = hardwareMap.get(DcMotor.class, "Rarm");
+        Larm = hardwareMap.get(DcMotor.class, "Larm");
+        bar = hardwareMap.get(Servo.class, "bar");
+        RClaw = hardwareMap.get(Servo.class, "RClaw");
+        LClaw = hardwareMap.get(Servo.class, "LClaw");
+        sArm = hardwareMap.get(DcMotor.class, "sArm");
+        Funnel = hardwareMap.get(Servo.class, "Funnel");
+        Door = hardwareMap.get(Servo.class, "Door");
+        Outake = hardwareMap.get(CRServo.class, "Outake");
 
 
 
@@ -137,15 +136,18 @@ public class RedBackstage extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.FORWARD);
         leftRear.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.FORWARD);
-        Intake.setDirection(DcMotor.Direction.FORWARD);
-        slide.setDirection(DcMotor.Direction.REVERSE);
+        intake.setDirection(DcMotor.Direction.REVERSE);
+        Rarm.setDirection(DcMotor.Direction.FORWARD);
+        Larm.setDirection(DcMotor.Direction.REVERSE);
+        sArm.setDirection(DcMotor.Direction.FORWARD);
 
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
-
-        drone.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch Play to start OpMode");
@@ -153,55 +155,96 @@ public class RedBackstage extends LinearOpMode {
         waitForStart();
 
 
+
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
 
 
 
-        //---------------------ID 1 Trajectories-----------------
+        //---------------------Left Trajectories-----------------
 
 
 
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(28)
+                .strafeLeft(10)
                 .build();
-
-        TrajectorySequence left_traj2 = drive.trajectorySequenceBuilder(left_traj1.end())
-                .turn(Math.toRadians(-270))
+        /*TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
+                .turn(Math.toRadians(90))
+                .build();*/
+        Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
+                .forward(26)
                 .build();
-
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .back(7)
+                .back(6)
                 .build();
-        Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .forward(7)
+        TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
+                .turn(Math.toRadians(90))
                 .build();
-
+        Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
+                .forward(24)
+                .build();
+        TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
+                .forward(17)
+                .build();
+        Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
+                .strafeRight(10)
+                .build();
 
 
         // -------------------Middle Trajectories-------------
         Trajectory middle_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(30)
+                .forward(30)
                 .build();
         Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
-                .forward(5)
+                .back(8)
                 .build();
-        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_traj2.end())
-                .strafeLeft(15)
+        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
+                .forward(28)
+                .build();
+        TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
+                .forward(25)
+                .build();
+        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
+                .strafeRight(12)
                 .build();
 
-        // -------------------- ID 3 Trajectories -----------
+        // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(17)
+                .forward(28)
                 .build();
-        Trajectory right_traj2 = drive.trajectoryBuilder(right_traj1.end())
-                .strafeLeft(13)
+        TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
+                .turn(Math.toRadians(-90))
+                .build();
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_trajTurn.end())
+                .forward(2)
                 .build();
         Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .forward(5)
+                .back(15)
                 .build();
-        Trajectory right_traj4 = drive.trajectoryBuilder(right_traj3.end())
-                .strafeRight(15)
+        TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
+                .turn(Math.toRadians(-175))
+                .build();
+        Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
+                .forward(17)
+                .build();
+        TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
+                .forward(22)
+                .build();
+        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
+                .strafeRight(12)
                 .build();
 
 
@@ -222,12 +265,18 @@ public class RedBackstage extends LinearOpMode {
 
 
 
-                if (spikeLocation() == 3) {
+                if (spikeLocation() == 1) {
 
-                    drive.followTrajectory(right_traj1);
-                    drive.followTrajectory(right_traj2);
-                    drive.followTrajectory(right_traj3);
-                    drive.followTrajectory(right_traj4);
+                    drive.followTrajectory(left_traj1);
+                    //drive.followTrajectorySequence(left_trajTurn1);
+                    drive.followTrajectory(left_traj2);
+                    drive.followTrajectory(left_traj3);
+                    drive.followTrajectorySequence(left_trajTurn2);
+                    drive.followTrajectory(left_traj4);
+                    drive.followTrajectorySequence(left_trajTurn3);
+                    drive.followTrajectory(left_traj5);
+                    drive.followTrajectory(left_traj6);
+
                     sleep(100000);
 
 
@@ -235,7 +284,11 @@ public class RedBackstage extends LinearOpMode {
 
                     drive.followTrajectory(middle_traj1);
                     drive.followTrajectory(middle_traj2);
+                    drive.followTrajectorySequence(middle_trajTurn1);
                     drive.followTrajectory(middle_traj3);
+                    drive.followTrajectorySequence(middle_trajTurn2);
+                    drive.followTrajectory(middle_traj4);
+                    drive.followTrajectory(middle_traj5);
 
 
 
@@ -245,10 +298,19 @@ public class RedBackstage extends LinearOpMode {
 
                 } else {
 
-                    drive.followTrajectory(left_traj1);
-                    drive.followTrajectorySequence(left_traj2);
-                    drive.followTrajectory(left_traj3);
-                    drive.followTrajectory(left_traj4);
+                    drive.followTrajectory(right_traj1);
+                    drive.followTrajectorySequence(right_trajTurn);
+                    drive.followTrajectory(right_traj2);
+                    drive.followTrajectory(right_traj3);
+                    drive.followTrajectorySequence(right_trajTurn2);
+                    drive.followTrajectory(right_traj4);
+                    drive.followTrajectorySequence(right_trajTurn3);
+                    drive.followTrajectory(right_traj5);
+                    drive.followTrajectory(right_traj6);
+                    //armpose(-4);
+
+
+
 
 
                     sleep(100000);
@@ -362,7 +424,7 @@ public class RedBackstage extends LinearOpMode {
 
     }   // end method telemetryTfod()
 
-    public void intake(String mode, double power){
+    /*public void intake(String mode, double power){
         Intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (mode == "intake"){
@@ -376,24 +438,24 @@ public class RedBackstage extends LinearOpMode {
             Intake.setPower(0);
         }
 
-    }
+    }*/
     private double spikeLocation() {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
 
-        double location = 1;
+        double location = 3;
 
         for (Recognition recognition : currentRecognitions) {
 
-            if (recognition.getLeft() <= 322) {
-                location = 2;
-                telemetry.addData("Spike mark location: ", "center");
-            } else if (recognition.getLeft() > 322) {
-                location = 3;
-                telemetry.addData("Spike mark location: ", "right");
-            } else {
+            if (recognition.getLeft() <= 263) {
                 location = 1;
                 telemetry.addData("Spike mark location: ", "left");
+            } else if (recognition.getLeft() > 263) {
+                location = 2;
+                telemetry.addData("Spike mark location: ", "middle");
+            } else {
+                location = 3;
+                telemetry.addData("Spike mark location: ", "right");
             }
 
         }   // end for() loop
@@ -401,7 +463,7 @@ public class RedBackstage extends LinearOpMode {
         return location;
     }
 
-
+/*
     public void armDown(double distance, double power) {
 
         //Reset Encoders
@@ -448,6 +510,124 @@ public class RedBackstage extends LinearOpMode {
 
         sleep(1000);
 
+    }*/
+public void encoderDriveArm(double speed,
+                            double Larminches, double Rarminches) {
+    int newLarmtarget;
+    int newRarmtarget;
+
+    // Ensure that the opmode is still active
+
+    // Determine new target position, and pass to motor controller
+    newLarmtarget = Larm.getCurrentPosition() + (int)(Larminches * COUNTS_PER_INCH);
+    newRarmtarget = Rarm.getCurrentPosition() + (int)(Rarminches * COUNTS_PER_INCH);
+
+
+    Larm.setTargetPosition(newLarmtarget);
+    Rarm.setTargetPosition(newRarmtarget);
+
+
+    // Turn On RUN_TO_POSITION
+    Larm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    Rarm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+    // reset the timeout time and start motion
+    Larm.setPower(Math.abs(speed));
+    Rarm.setPower(Math.abs(speed));
+
+
+    // keep looping while we are still active, and there is time left, and both motors are running.
+    // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+    // its target position, the motion will stop.  This is "safer" in the event that the robot will
+    // always end the motion as soon as possible.
+    // However, if you require that BOTH motors have finished their moves before the robot continues
+    // onto the next step, use (isBusy() || isBusy()) in the loop test.
+    while (opModeIsActive() &&
+            (Larm.isBusy() && Rarm.isBusy())) {
+
+        // Display it for the driver.
+        telemetry.update();
     }
 
+    // Stop all motion;
+    Larm.setPower(0);
+    Rarm.setPower(0);
+
+
+    // Turn off RUN_TO_POSITION
+    Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+}
+    private void runEncoder(DcMotor motor, int newMotorTarget, double speed){
+
+        // Ensure that the opmode is still active
+
+        motor.setTargetPosition(newMotorTarget);
+
+        // Turn On RUN_TO_POSITION
+        motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // reset the timeout time and start motion.
+        motor.setPower(Math.abs(speed));
+
+        // keep looping while we are still active, and there is time left, and both motors are running.
+        // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+        // its target position, the motion will stop.  This is "safer" in the event that the robot will
+        // always end the motion as soon as possible.
+        // However, if you require that BOTH motors have finished their moves before the robot continues
+        // onto the next step, use (isBusy() || isBusy()) in the loop test.
+        while (opModeIsActive() && motor.isBusy()) {
+
+            // Display it for the driver.
+            telemetry.update();
+        }
+
+        // Stop all motion;
+        motor.setPower(0);
+
+        // Turn off RUN_TO_POSITION
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void armUp(double inches){
+        encoderDriveArm(DRIVE_SPEED, -inches, -inches);
+    }
+    public void armDown(double inches){
+        encoderDriveArm(SLOW_SPEED, inches, inches);
+    }
+    public void armpose(int pose){
+        double ticks = 22.76;
+        double armAngle = Larm.getCurrentPosition() / ticks - 25;
+        while (armAngle != pose) {
+            armAngle = Larm.getCurrentPosition() / ticks - 25;
+            if (pose < armAngle + 1 && pose > armAngle - 1) {// Stop arm movement within a 4 degree range
+                Larm.setPower(0);
+                Rarm.setPower(0);
+                break;
+
+            } else if (pose > armAngle + 8 || pose < armAngle - 8) {//  Far and fast arm move into position within an infinite range
+                if (pose < armAngle) {
+                    Larm.setPower(1);
+                    Rarm.setPower(1);
+                }
+                if (pose > armAngle) {
+                    Larm.setPower(-1);
+                    Rarm.setPower(-1);
+                }
+
+            } else { //Close and slow arm move into position if arm is in a 16 degree range
+                if (pose < armAngle) {
+                    Larm.setPower(.2);
+                    Rarm.setPower(.2);
+                }
+                if (pose > armAngle) {
+                    Larm.setPower(-.2);
+                    Rarm.setPower(-.2);
+                }
+
+            }
+        }
+    }
 } // end class
