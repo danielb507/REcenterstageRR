@@ -170,7 +170,7 @@ public class BlueAudience extends LinearOpMode {
                 .forward(28)
                 .build();
         TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(93))
                 .waitSeconds(15)
                 .build();
         Trajectory left_traj2 = drive.trajectoryBuilder(left_trajTurn1.end())
@@ -183,7 +183,7 @@ public class BlueAudience extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .build();*/
         Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .strafeRight(24)
+                .strafeRight(23)
                 .build();
         /*TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
                 .turn(Math.toRadians(90))
