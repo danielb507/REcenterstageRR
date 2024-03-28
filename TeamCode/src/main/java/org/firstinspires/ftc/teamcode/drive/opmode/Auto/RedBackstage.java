@@ -167,31 +167,31 @@ public class RedBackstage extends LinearOpMode {
 
 
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .strafeLeft(10)
+                .forward(28)
                 .build();
-        /*TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
+        TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
                 .turn(Math.toRadians(90))
-                .build();*/
-        Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
-                .forward(26)
+                .build();
+        Trajectory left_traj2 = drive.trajectoryBuilder(left_trajTurn1.end())
+                .forward(3)
                 .build();
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .back(6)
+                .back(8)
                 .build();
         TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(175))
                 .build();
         Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
                 .forward(24)
                 .build();
         TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
-                .forward(17)
+                .forward(21)
                 .build();
         Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
-                .strafeRight(10)
+                .strafeLeft(17)
                 .build();
 
 
@@ -203,48 +203,48 @@ public class RedBackstage extends LinearOpMode {
                 .back(8)
                 .build();
         TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
                 .forward(28)
                 .build();
         TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
                 .forward(25)
                 .build();
         Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .strafeRight(12)
+                .strafeLeft(12)
                 .build();
 
         // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .forward(28)
+                .strafeRight(10)
                 .build();
-        TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
+        /*TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
                 .turn(Math.toRadians(-90))
-                .build();
-        Trajectory right_traj2 = drive.trajectoryBuilder(right_trajTurn.end())
-                .forward(2)
+                .build();*/
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_traj1.end())
+                .forward(26)
                 .build();
         Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .back(15)
+                .back(6)
                 .build();
         TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
-                .turn(Math.toRadians(-175))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
-                .forward(17)
+                .forward(24)
                 .build();
         TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
-                .forward(22)
+                .forward(17)
                 .build();
         Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .strafeRight(12)
+                .strafeLeft(10)
                 .build();
 
 
@@ -268,7 +268,7 @@ public class RedBackstage extends LinearOpMode {
                 if (spikeLocation() == 1) {
 
                     drive.followTrajectory(left_traj1);
-                    //drive.followTrajectorySequence(left_trajTurn1);
+                    drive.followTrajectorySequence(left_trajTurn1);
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
                     drive.followTrajectorySequence(left_trajTurn2);
@@ -299,7 +299,7 @@ public class RedBackstage extends LinearOpMode {
                 } else {
 
                     drive.followTrajectory(right_traj1);
-                    drive.followTrajectorySequence(right_trajTurn);
+                    //drive.followTrajectorySequence(right_trajTurn);
                     drive.followTrajectory(right_traj2);
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
