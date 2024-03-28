@@ -257,7 +257,7 @@ public class BlueBackstage extends LinearOpMode {
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
                     drive.followTrajectory(right_traj4);
-                    armpose(-4);
+                    armUp(200);
 
 
 
@@ -541,43 +541,28 @@ public void encoderDriveArm(double speed,
         // Turn off RUN_TO_POSITION
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void armUp(double inches){
-        encoderDriveArm(DRIVE_SPEED, -inches, -inches);
-    }
-    public void armDown(double inches){
-        encoderDriveArm(SLOW_SPEED, inches, inches);
-    }
-    public void armpose(int pose){
-        double ticks = 22.76;
-        double armAngle = Larm.getCurrentPosition() / ticks - 25;
-        while (armAngle != pose) {
-            armAngle = Larm.getCurrentPosition() / ticks - 25;
-            if (pose < armAngle + 1 && pose > armAngle - 1) {// Stop arm movement within a 4 degree range
-                Larm.setPower(0);
-                Rarm.setPower(0);
-                break;
+    public void armUp(double distance) {
 
-            } else if (pose > armAngle + 8 || pose < armAngle - 8) {//  Far and fast arm move into position within an infinite range
-                if (pose < armAngle) {
-                    Larm.setPower(1);
-                    Rarm.setPower(1);
-                }
-                if (pose > armAngle) {
-                    Larm.setPower(-1);
-                    Rarm.setPower(-1);
-                }
+        //Reset Encoders
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            } else { //Close and slow arm move into position if arm is in a 16 degree range
-                if (pose < armAngle) {
-                    Larm.setPower(.2);
-                    Rarm.setPower(.2);
-                }
-                if (pose > armAngle) {
-                    Larm.setPower(-.2);
-                    Rarm.setPower(-.2);
-                }
+        Rarm.setPower(1);
+        Larm.setPower(1);
 
-            }
+        while (Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
         }
+
+        Rarm.setPower(0);
+        Larm.setPower(0);
+
+        sleep(500);
+
     }
+
+
 } // end class
