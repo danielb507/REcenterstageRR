@@ -168,19 +168,31 @@ public class BlueBackstage extends LinearOpMode {
 
 
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .forward(28)
+                .strafeLeft(10)
                 .build();
+        /*TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
+                .turn(Math.toRadians(90))
+                .build();*/
         Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
-                .forward(3)
+                .forward(26)
                 .build();
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .strafeRight(15)
+                .back(6)
                 .build();
-        Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .forward(10)
+        TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
+                .turn(Math.toRadians(90))
                 .build();
-        Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
-                .strafeLeft(25)
+        Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
+                .forward(24)
+                .build();
+        TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
+                .forward(17)
+                .build();
+        Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
+                .strafeRight(10)
                 .build();
 
 
@@ -189,19 +201,19 @@ public class BlueBackstage extends LinearOpMode {
                 .forward(30)
                 .build();
         Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
-                .back(5)
+                .back(8)
                 .build();
         TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
                 .turn(Math.toRadians(90))
                 .build();
         Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .forward(24)
+                .forward(28)
                 .build();
         TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
                 .turn(Math.toRadians(90))
                 .build();
         Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
-                .forward(22)
+                .forward(25)
                 .build();
         Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
                 .strafeRight(12)
@@ -257,10 +269,14 @@ public class BlueBackstage extends LinearOpMode {
                 if (spikeLocation() == 1) {
 
                     drive.followTrajectory(left_traj1);
+                    //drive.followTrajectorySequence(left_trajTurn1);
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
+                    drive.followTrajectorySequence(left_trajTurn2);
                     drive.followTrajectory(left_traj4);
+                    drive.followTrajectorySequence(left_trajTurn3);
                     drive.followTrajectory(left_traj5);
+                    drive.followTrajectory(left_traj6);
 
                     sleep(100000);
 
