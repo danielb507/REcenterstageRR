@@ -186,7 +186,25 @@ public class BlueBackstage extends LinearOpMode {
 
         // -------------------Middle Trajectories-------------
         Trajectory middle_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .back(30)
+                .forward(30)
+                .build();
+        Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
+                .back(5)
+                .build();
+        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
+                .forward(24)
+                .build();
+        TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
+                .forward(22)
+                .build();
+        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
+                .strafeRight(12)
                 .build();
 
         // -------------------- Right Trajectories -----------
@@ -207,10 +225,18 @@ public class BlueBackstage extends LinearOpMode {
                 .build();
         Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
                 .forward(17)
-                .addTemporalMarker(0.1, () -> {
-
-                })
                 .build();
+        TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
+                .forward(22)
+                .build();
+        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
+                .strafeRight(12)
+                .build();
+
+
 
 
 
@@ -242,8 +268,14 @@ public class BlueBackstage extends LinearOpMode {
                 } else if (spikeLocation() == 2) {
 
                     drive.followTrajectory(middle_traj1);
-                    //drive.followTrajectory(middle_traj2);
-                   // drive.followTrajectory(middle_traj3);
+                    drive.followTrajectory(middle_traj2);
+                    drive.followTrajectorySequence(middle_trajTurn1);
+                    drive.followTrajectory(middle_traj3);
+                    drive.followTrajectorySequence(middle_trajTurn2);
+                    drive.followTrajectory(middle_traj4);
+                    drive.followTrajectory(middle_traj5);
+
+
 
                     sleep(100000);
 
@@ -257,7 +289,10 @@ public class BlueBackstage extends LinearOpMode {
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
                     drive.followTrajectory(right_traj4);
-                    armpose(-4);
+                    drive.followTrajectorySequence(right_trajTurn3);
+                    drive.followTrajectory(right_traj5);
+                    drive.followTrajectory(right_traj6);
+                    //armpose(-4);
 
 
 
