@@ -189,14 +189,26 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
                 .forward(24)
                 .build();
-        TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
-                .turn(Math.toRadians(90))
+        TrajectorySequence arm_left = drive.trajectorySequenceBuilder(left_traj4.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
                 .build();
-        Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
-                .forward(17)
+        Trajectory left_traj5 = drive.trajectoryBuilder(arm_left.end())
+                .strafeLeft(12)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
                 .build();
         Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
-                .strafeRight(10)
+                .forward(17)
                 .build();
 
 
@@ -306,8 +318,12 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
                     drive.followTrajectorySequence(left_trajTurn2);
+                    armUp(1350);
+                    smallUp(870);
                     drive.followTrajectory(left_traj4);
-                    drive.followTrajectorySequence(left_trajTurn3);
+                    drive.followTrajectorySequence(arm_left);
+                    armDown(1350);
+                    smallDown(870);
                     drive.followTrajectory(left_traj5);
                     drive.followTrajectory(left_traj6);
 
