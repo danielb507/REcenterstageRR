@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -57,7 +58,7 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Autonomous(name = "BlueBackstage", group = "Concept")
+@Autonomous(name = "BlueBackstageYellowPixel", group = "Concept")
 public class BlueBackstageYellowPixel extends LinearOpMode {
 
     private DcMotorEx leftFront = null;
@@ -140,6 +141,10 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         Rarm.setDirection(DcMotor.Direction.FORWARD);
         Larm.setDirection(DcMotor.Direction.REVERSE);
         sArm.setDirection(DcMotor.Direction.FORWARD);
+
+        Larm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -234,17 +239,23 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
                 .turn(Math.toRadians(-175))
                 .build();
-        Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
-                .forward(17)
+        TrajectorySequence arm_right = drive.trajectorySequenceBuilder(right_trajTurn2.end())
+                .addTemporalMarker(0.3, () -> {
+                    Door.setPosition(1);
+                })
+                .waitSeconds(2)
                 .build();
-        TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
-                .turn(Math.toRadians(90))
+        Trajectory right_traj4 = drive.trajectoryBuilder(arm_right.end())
+                .forward(28)
                 .build();
-        Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
-                .forward(22)
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
+                .strafeLeft(22)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
                 .build();
         Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .strafeRight(12)
+                .forward(12)
                 .build();
 
 
@@ -304,10 +315,13 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
                     drive.followTrajectory(right_traj4);
-                    drive.followTrajectorySequence(right_trajTurn3);
+                    armUp(1350);
+                    smallUp(700);
+                    drive.followTrajectorySequence(arm_right);
+                    armDown(1350);
+                    smallDown(700);
                     drive.followTrajectory(right_traj5);
                     drive.followTrajectory(right_traj6);
-                    //armpose(-4);
 
 
 
@@ -641,7 +655,7 @@ public void encoderDriveArm(double speed,
         Rarm.setPower(-1);
         Larm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
+        while (-Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -663,7 +677,7 @@ public void encoderDriveArm(double speed,
         Rarm.setPower(1);
         Larm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
+        while (Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -682,8 +696,8 @@ public void encoderDriveArm(double speed,
 
         sArm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (-sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 
@@ -700,8 +714,8 @@ public void encoderDriveArm(double speed,
 
         sArm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 
