@@ -210,13 +210,13 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj2.end())
                 .turn(Math.toRadians(90))
                 .build();
-        Trajectory middle_trajStrafe = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .strafeLeft(5)
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
+                .forward(37)
                 .build();
-        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajStrafe.end())
-                .forward(36)
+        Trajectory middle_trajStrafe = drive.trajectoryBuilder(middle_traj3.end())
+                .strafeRight(5)
                 .build();
-        TrajectorySequence arm_mid = drive.trajectorySequenceBuilder(middle_traj3.end())
+        TrajectorySequence arm_mid = drive.trajectorySequenceBuilder(middle_trajStrafe.end())
                 .addTemporalMarker(1, () -> {
                     Door.setPosition(1);
                 })
@@ -229,10 +229,13 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                 .waitSeconds(2.5)
                 .build();
         Trajectory middle_traj4 = drive.trajectoryBuilder(arm_mid.end())
-                .strafeLeft(20)
+                .strafeLeft(21)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
                 .build();
         Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .forward(20)
+                .forward(12)
                 .build();
         // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
@@ -316,10 +319,10 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(middle_traj1);
                     drive.followTrajectory(middle_traj2);
                     drive.followTrajectorySequence(middle_trajTurn1);
-                    drive.followTrajectory(middle_trajStrafe);
                     armUp(1350);
                     smallUp(870);
                     drive.followTrajectory(middle_traj3);
+                    drive.followTrajectory(middle_trajStrafe);
                     drive.followTrajectorySequence(arm_mid);
                     armDown(1350);
                     smallDown(870);
