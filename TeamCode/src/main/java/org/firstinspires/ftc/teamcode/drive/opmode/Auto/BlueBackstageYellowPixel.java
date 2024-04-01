@@ -207,22 +207,33 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
                 .back(8)
                 .build();
-        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
+        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj2.end())
                 .turn(Math.toRadians(90))
                 .build();
-        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .forward(28)
+        Trajectory middle_trajStrafe = drive.trajectoryBuilder(middle_trajTurn1.end())
+                .strafeLeft(5)
                 .build();
-        TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
-                .turn(Math.toRadians(90))
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajStrafe.end())
+                .forward(36)
                 .build();
-        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
-                .forward(25)
+        TrajectorySequence arm_mid = drive.trajectorySequenceBuilder(middle_traj3.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
+                .build();
+        Trajectory middle_traj4 = drive.trajectoryBuilder(arm_mid.end())
+                .strafeLeft(20)
                 .build();
         Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .strafeRight(12)
+                .forward(20)
                 .build();
-
         // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
                 .forward(28)
@@ -239,22 +250,31 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
         TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
                 .turn(Math.toRadians(-175))
                 .build();
-        TrajectorySequence arm_right = drive.trajectorySequenceBuilder(right_trajTurn2.end())
-                .addTemporalMarker(0.3, () -> {
-                    Door.setPosition(1);
-                })
-                .waitSeconds(2)
-                .build();
-        Trajectory right_traj4 = drive.trajectoryBuilder(arm_right.end())
-                .forward(28)
+        Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
+                .forward(24)
                 .build();
         Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
-                .strafeLeft(22)
+                .strafeRight(7)
+                .build();
+        TrajectorySequence arm_right = drive.trajectorySequenceBuilder(right_traj5.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
+                .build();
+        Trajectory right_traj6 = drive.trajectoryBuilder(arm_right.end())
+                .strafeLeft(29)
                 .addTemporalMarker(0.5, () -> {
                     Door.setPosition(0);
                 })
                 .build();
-        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
+        Trajectory right_traj7 = drive.trajectoryBuilder(right_traj6.end())
                 .forward(12)
                 .build();
 
@@ -296,8 +316,13 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(middle_traj1);
                     drive.followTrajectory(middle_traj2);
                     drive.followTrajectorySequence(middle_trajTurn1);
+                    drive.followTrajectory(middle_trajStrafe);
+                    armUp(1350);
+                    smallUp(870);
                     drive.followTrajectory(middle_traj3);
-                    drive.followTrajectorySequence(middle_trajTurn2);
+                    drive.followTrajectorySequence(arm_mid);
+                    armDown(1350);
+                    smallDown(870);
                     drive.followTrajectory(middle_traj4);
                     drive.followTrajectory(middle_traj5);
 
@@ -314,14 +339,15 @@ public class BlueBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(right_traj2);
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
-                    drive.followTrajectory(right_traj4);
                     armUp(1350);
-                    smallUp(700);
+                    smallUp(870);
+                    drive.followTrajectory(right_traj4);
+                    drive.followTrajectory(right_traj5);
                     drive.followTrajectorySequence(arm_right);
                     armDown(1350);
-                    smallDown(700);
-                    drive.followTrajectory(right_traj5);
+                    smallDown(870);
                     drive.followTrajectory(right_traj6);
+                    drive.followTrajectory(right_traj7);
 
 
 
