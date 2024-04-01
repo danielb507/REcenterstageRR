@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -58,8 +57,8 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Autonomous(name = "BlueBackstage", group = "Concept")
-public class BlueBackstage extends LinearOpMode {
+@Autonomous(name = "RedBackstage", group = "Concept")
+public class RedBackstageYellowPixel extends LinearOpMode {
 
     private DcMotorEx leftFront = null;
     private DcMotorEx rightRear = null;
@@ -91,13 +90,13 @@ public class BlueBackstage extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "Blue_Box.tflite";
+    private static final String TFOD_MODEL_ASSET = "Red_Box.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     //private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/Red_hat.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "blue box",
+            "red box",
     };
 
     /**
@@ -170,17 +169,29 @@ public class BlueBackstage extends LinearOpMode {
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
                 .forward(28)
                 .build();
-        Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
+        TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
+                .turn(Math.toRadians(90))
+                .build();
+        Trajectory left_traj2 = drive.trajectoryBuilder(left_trajTurn1.end())
                 .forward(3)
                 .build();
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .strafeRight(15)
+                .back(8)
                 .build();
-        Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .forward(10)
+        TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
+                .turn(Math.toRadians(175))
                 .build();
-        Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
-                .strafeLeft(25)
+        Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
+                .forward(24)
+                .build();
+        TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
+                .turn(Math.toRadians(-90))
+                .build();
+        Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
+                .forward(21)
+                .build();
+        Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
+                .strafeLeft(17)
                 .build();
 
 
@@ -189,51 +200,51 @@ public class BlueBackstage extends LinearOpMode {
                 .forward(30)
                 .build();
         Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
-                .back(5)
+                .back(8)
                 .build();
         TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .forward(24)
+                .forward(28)
                 .build();
         TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
-                .forward(22)
+                .forward(25)
                 .build();
         Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .strafeRight(12)
+                .strafeLeft(12)
                 .build();
 
         // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .forward(28)
+                .strafeRight(10)
                 .build();
-        TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
+        /*TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
                 .turn(Math.toRadians(-90))
-                .build();
-        Trajectory right_traj2 = drive.trajectoryBuilder(right_trajTurn.end())
-                .forward(2)
+                .build();*/
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_traj1.end())
+                .forward(26)
                 .build();
         Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .back(15)
+                .back(6)
                 .build();
         TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
-                .turn(Math.toRadians(-175))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
-                .forward(17)
+                .forward(24)
                 .build();
         TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
-                .forward(22)
+                .forward(17)
                 .build();
         Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .strafeRight(12)
+                .strafeLeft(10)
                 .build();
 
 
@@ -257,10 +268,14 @@ public class BlueBackstage extends LinearOpMode {
                 if (spikeLocation() == 1) {
 
                     drive.followTrajectory(left_traj1);
+                    drive.followTrajectorySequence(left_trajTurn1);
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
+                    drive.followTrajectorySequence(left_trajTurn2);
                     drive.followTrajectory(left_traj4);
+                    drive.followTrajectorySequence(left_trajTurn3);
                     drive.followTrajectory(left_traj5);
+                    drive.followTrajectory(left_traj6);
 
                     sleep(100000);
 
@@ -284,7 +299,7 @@ public class BlueBackstage extends LinearOpMode {
                 } else {
 
                     drive.followTrajectory(right_traj1);
-                    drive.followTrajectorySequence(right_trajTurn);
+                    //drive.followTrajectorySequence(right_trajTurn);
                     drive.followTrajectory(right_traj2);
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
@@ -576,12 +591,12 @@ public void encoderDriveArm(double speed,
         // Turn off RUN_TO_POSITION
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void armUp(double inches){
+   /* public void armUp(double inches){
         encoderDriveArm(DRIVE_SPEED, -inches, -inches);
     }
     public void armDown(double inches){
         encoderDriveArm(SLOW_SPEED, inches, inches);
-    }
+    }*/
     public void armpose(int pose){
         double ticks = 22.76;
         double armAngle = Larm.getCurrentPosition() / ticks - 25;
@@ -614,5 +629,85 @@ public void encoderDriveArm(double speed,
 
             }
         }
+    }
+    public void armUp(double distance) {
+
+        //Reset Encoders
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Rarm.setPower(-1);
+        Larm.setPower(-1);
+
+        while (Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        Rarm.setPower(0);
+        Larm.setPower(0);
+
+        // sleep(500);
+
+    }
+    public void armDown(double distance) {
+
+        //Reset Encoders
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Rarm.setPower(1);
+        Larm.setPower(1);
+
+        while (-Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        Rarm.setPower(0);
+        Larm.setPower(0);
+
+        // sleep(500);
+
+    }
+    public void smallUp(double distance) {
+
+        //Reset Encoders
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sArm.setPower(-1);
+
+        while (Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        sArm.setPower(0);
+
+        //sleep(500);
+
+    }
+    public void smallDown(double distance) {
+
+        //Reset Encoders
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sArm.setPower(1);
+
+        while (-Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        sArm.setPower(0);
+
+        // sleep(500);
+
     }
 } // end class

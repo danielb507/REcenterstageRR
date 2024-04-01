@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
@@ -58,8 +57,8 @@ import java.util.List;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Autonomous(name = "BlueBackstage", group = "Concept")
-public class BlueBackstage extends LinearOpMode {
+@Autonomous(name = "BlueAudience", group = "Concept")
+public class BlueAudienceYellowPixel extends LinearOpMode {
 
     private DcMotorEx leftFront = null;
     private DcMotorEx rightRear = null;
@@ -170,18 +169,35 @@ public class BlueBackstage extends LinearOpMode {
         Trajectory left_traj1 = drive.trajectoryBuilder(new Pose2d())
                 .forward(28)
                 .build();
-        Trajectory left_traj2 = drive.trajectoryBuilder(left_traj1.end())
+        TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj1.end())
+                .turn(Math.toRadians(93))
+                .waitSeconds(15)
+                .build();
+        Trajectory left_traj2 = drive.trajectoryBuilder(left_trajTurn1.end())
                 .forward(3)
                 .build();
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .strafeRight(15)
+                .back(6)
                 .build();
+        /*TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
+                .turn(Math.toRadians(90))
+                .build();*/
         Trajectory left_traj4 = drive.trajectoryBuilder(left_traj3.end())
-                .forward(10)
+                .strafeRight(23)
                 .build();
+        /*TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
+                .turn(Math.toRadians(90))
+                .build();*/
         Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
-                .strafeLeft(25)
+                .forward(95)
                 .build();
+        /*TrajectorySequence left_trajTurn1 = drive.trajectorySequenceBuilder(left_traj5.end())
+                .turn(Math.toRadians(-87.5))
+                .waitSeconds(17)
+                .build();
+        Trajectory left_traj6 = drive.trajectoryBuilder(left_trajTurn1.end())
+                .forward(95)
+                .build();*/
 
 
         // -------------------Middle Trajectories-------------
@@ -189,51 +205,60 @@ public class BlueBackstage extends LinearOpMode {
                 .forward(30)
                 .build();
         Trajectory middle_traj2 = drive.trajectoryBuilder(middle_traj1.end())
-                .back(5)
+                .back(8)
                 .build();
-        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
-                .turn(Math.toRadians(90))
+        /*TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj1.end())
+                .turn(Math.toRadians(-90))
+                .build();*/
+        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_traj2.end())
+                .strafeRight(15)
                 .build();
-        Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .forward(24)
+        /*TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
+                .turn(Math.toRadians(-90))
+                .build();*/
+        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_traj3.end())
+                .forward(28)
                 .build();
-        TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
-                .turn(Math.toRadians(90))
+        TrajectorySequence middle_trajTurn1 = drive.trajectorySequenceBuilder(middle_traj4.end())
+                .turn(Math.toRadians(88.5))
+                .waitSeconds(15)
                 .build();
-        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
-                .forward(22)
-                .build();
-        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .strafeRight(12)
+        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_trajTurn1.end())
+                .forward(100)
                 .build();
 
         // -------------------- Right Trajectories -----------
         Trajectory right_traj1 = drive.trajectoryBuilder(new Pose2d())
-                .forward(28)
+                .strafeRight(10)
                 .build();
-        TrajectorySequence right_trajTurn = drive.trajectorySequenceBuilder(right_traj1.end())
+        /*TrajectorySequence right_trajTurn1 = drive.trajectorySequenceBuilder(right_traj1.end())
                 .turn(Math.toRadians(-90))
-                .build();
-        Trajectory right_traj2 = drive.trajectoryBuilder(right_trajTurn.end())
-                .forward(2)
+                .waitSeconds(17)
+                .build();*/
+        Trajectory right_traj2 = drive.trajectoryBuilder(right_traj1.end())
+                .forward(26)
                 .build();
         Trajectory right_traj3 = drive.trajectoryBuilder(right_traj2.end())
-                .back(15)
+                .back(6)
                 .build();
-        TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
-                .turn(Math.toRadians(-175))
+        /*TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
+                .turn(Math.toRadians(-90))
+                .build();*/
+        Trajectory right_traj4 = drive.trajectoryBuilder(right_traj3.end())
+                .strafeLeft(12)
                 .build();
-        Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
-                .forward(17)
+        /*TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
+                .turn(Math.toRadians(-90))
+                .build();*/
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
+                .forward(31)
                 .build();
-        TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
-                .turn(Math.toRadians(90))
+        TrajectorySequence right_trajTurn1 = drive.trajectorySequenceBuilder(right_traj5.end())
+                .turn(Math.toRadians(87.5))
+                .waitSeconds(15)
                 .build();
-        Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
-                .forward(22)
-                .build();
-        Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .strafeRight(12)
+        Trajectory right_traj6 = drive.trajectoryBuilder(right_trajTurn1.end())
+                .forward(90)
                 .build();
 
 
@@ -257,10 +282,15 @@ public class BlueBackstage extends LinearOpMode {
                 if (spikeLocation() == 1) {
 
                     drive.followTrajectory(left_traj1);
+                    drive.followTrajectorySequence(left_trajTurn1);
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
+                    //drive.followTrajectorySequence(left_trajTurn2);
                     drive.followTrajectory(left_traj4);
+                    //drive.followTrajectorySequence(left_trajTurn3);
                     drive.followTrajectory(left_traj5);
+                    //drive.followTrajectorySequence(left_trajTurn1);
+                    //drive.followTrajectory(left_traj6);
 
                     sleep(100000);
 
@@ -269,10 +299,11 @@ public class BlueBackstage extends LinearOpMode {
 
                     drive.followTrajectory(middle_traj1);
                     drive.followTrajectory(middle_traj2);
-                    drive.followTrajectorySequence(middle_trajTurn1);
+                    //drive.followTrajectorySequence(middle_trajTurn1);
                     drive.followTrajectory(middle_traj3);
-                    drive.followTrajectorySequence(middle_trajTurn2);
+                    //drive.followTrajectorySequence(middle_trajTurn2);
                     drive.followTrajectory(middle_traj4);
+                    drive.followTrajectorySequence(middle_trajTurn1);
                     drive.followTrajectory(middle_traj5);
 
 
@@ -284,13 +315,15 @@ public class BlueBackstage extends LinearOpMode {
                 } else {
 
                     drive.followTrajectory(right_traj1);
-                    drive.followTrajectorySequence(right_trajTurn);
+                    //drive.followTrajectorySequence(right_trajTurn);
+                    //drive.followTrajectorySequence(right_trajTurn1);
                     drive.followTrajectory(right_traj2);
+                    //drive.followTrajectorySequence(right_trajTurn2);
                     drive.followTrajectory(right_traj3);
-                    drive.followTrajectorySequence(right_trajTurn2);
+                    //drive.followTrajectorySequence(right_trajTurn3);
                     drive.followTrajectory(right_traj4);
-                    drive.followTrajectorySequence(right_trajTurn3);
                     drive.followTrajectory(right_traj5);
+                    drive.followTrajectorySequence(right_trajTurn1);
                     drive.followTrajectory(right_traj6);
                     //armpose(-4);
 
@@ -448,104 +481,104 @@ public class BlueBackstage extends LinearOpMode {
         return location;
     }
 
-/*
-    public void armDown(double distance, double power) {
+    /*
+        public void armDown(double distance, double power) {
 
-        //Reset Encoders
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-        slide.setPower(-power);
+            //Reset Encoders
+            slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        while (-slide.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", slide.getCurrentPosition());
+            slide.setPower(-power);
+
+
+            while (-slide.getCurrentPosition() < distance) {
+                telemetry.addData("Arm Encoder", slide.getCurrentPosition());
+                telemetry.update();
+            }
+
+            slide.setPower(0);
+
+            sleep(500);
+
+        }
+
+
+        public void armUp(double power, String mode) {
+
+            //Reset Encoders
+            slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slide.setPower(power);
+            if (mode == "Up"){
+                slide.setPower(power);
+            }
+
+            if (mode == "Down"){
+                slide.setPower(-power);
+            }
+            if (mode == "stop"){
+                slide.setPower(0);
+            }
+
+
+
+            slide.setPower(0);
+
+            sleep(1000);
+
+        }*/
+    public void encoderDriveArm(double speed,
+                                double Larminches, double Rarminches) {
+        int newLarmtarget;
+        int newRarmtarget;
+
+        // Ensure that the opmode is still active
+
+        // Determine new target position, and pass to motor controller
+        newLarmtarget = Larm.getCurrentPosition() + (int)(Larminches * COUNTS_PER_INCH);
+        newRarmtarget = Rarm.getCurrentPosition() + (int)(Rarminches * COUNTS_PER_INCH);
+
+
+        Larm.setTargetPosition(newLarmtarget);
+        Rarm.setTargetPosition(newRarmtarget);
+
+
+        // Turn On RUN_TO_POSITION
+        Larm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        Rarm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+        // reset the timeout time and start motion
+        Larm.setPower(Math.abs(speed));
+        Rarm.setPower(Math.abs(speed));
+
+
+        // keep looping while we are still active, and there is time left, and both motors are running.
+        // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+        // its target position, the motion will stop.  This is "safer" in the event that the robot will
+        // always end the motion as soon as possible.
+        // However, if you require that BOTH motors have finished their moves before the robot continues
+        // onto the next step, use (isBusy() || isBusy()) in the loop test.
+        while (opModeIsActive() &&
+                (Larm.isBusy() && Rarm.isBusy())) {
+
+            // Display it for the driver.
             telemetry.update();
         }
 
-        slide.setPower(0);
+        // Stop all motion;
+        Larm.setPower(0);
+        Rarm.setPower(0);
 
-        sleep(500);
+
+        // Turn off RUN_TO_POSITION
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
     }
-
-
-    public void armUp(double power, String mode) {
-
-        //Reset Encoders
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        slide.setPower(power);
-        if (mode == "Up"){
-            slide.setPower(power);
-        }
-
-        if (mode == "Down"){
-            slide.setPower(-power);
-        }
-        if (mode == "stop"){
-            slide.setPower(0);
-        }
-
-
-
-        slide.setPower(0);
-
-        sleep(1000);
-
-    }*/
-public void encoderDriveArm(double speed,
-                            double Larminches, double Rarminches) {
-    int newLarmtarget;
-    int newRarmtarget;
-
-    // Ensure that the opmode is still active
-
-    // Determine new target position, and pass to motor controller
-    newLarmtarget = Larm.getCurrentPosition() + (int)(Larminches * COUNTS_PER_INCH);
-    newRarmtarget = Rarm.getCurrentPosition() + (int)(Rarminches * COUNTS_PER_INCH);
-
-
-    Larm.setTargetPosition(newLarmtarget);
-    Rarm.setTargetPosition(newRarmtarget);
-
-
-    // Turn On RUN_TO_POSITION
-    Larm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    Rarm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
-    // reset the timeout time and start motion
-    Larm.setPower(Math.abs(speed));
-    Rarm.setPower(Math.abs(speed));
-
-
-    // keep looping while we are still active, and there is time left, and both motors are running.
-    // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-    // its target position, the motion will stop.  This is "safer" in the event that the robot will
-    // always end the motion as soon as possible.
-    // However, if you require that BOTH motors have finished their moves before the robot continues
-    // onto the next step, use (isBusy() || isBusy()) in the loop test.
-    while (opModeIsActive() &&
-            (Larm.isBusy() && Rarm.isBusy())) {
-
-        // Display it for the driver.
-        telemetry.update();
-    }
-
-    // Stop all motion;
-    Larm.setPower(0);
-    Rarm.setPower(0);
-
-
-    // Turn off RUN_TO_POSITION
-    Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-}
     private void runEncoder(DcMotor motor, int newMotorTarget, double speed){
 
         // Ensure that the opmode is still active
@@ -576,12 +609,12 @@ public void encoderDriveArm(double speed,
         // Turn off RUN_TO_POSITION
         motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void armUp(double inches){
+    /*public void armUp(double inches){
         encoderDriveArm(DRIVE_SPEED, -inches, -inches);
     }
     public void armDown(double inches){
         encoderDriveArm(SLOW_SPEED, inches, inches);
-    }
+    }*/
     public void armpose(int pose){
         double ticks = 22.76;
         double armAngle = Larm.getCurrentPosition() / ticks - 25;
@@ -614,5 +647,85 @@ public void encoderDriveArm(double speed,
 
             }
         }
+    }
+    public void armUp(double distance) {
+
+        //Reset Encoders
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Rarm.setPower(-1);
+        Larm.setPower(-1);
+
+        while (Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        Rarm.setPower(0);
+        Larm.setPower(0);
+
+       // sleep(500);
+
+    }
+    public void armDown(double distance) {
+
+        //Reset Encoders
+        Rarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        Larm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        Rarm.setPower(1);
+        Larm.setPower(1);
+
+        while (-Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        Rarm.setPower(0);
+        Larm.setPower(0);
+
+       // sleep(500);
+
+    }
+    public void smallUp(double distance) {
+
+        //Reset Encoders
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sArm.setPower(-1);
+
+        while (Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        sArm.setPower(0);
+
+        //sleep(500);
+
+    }
+    public void smallDown(double distance) {
+
+        //Reset Encoders
+        sArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        sArm.setPower(1);
+
+        while (-Rarm.getCurrentPosition() < distance) {
+            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+            telemetry.update();
+        }
+
+        sArm.setPower(0);
+
+       // sleep(500);
+
     }
 } // end class
