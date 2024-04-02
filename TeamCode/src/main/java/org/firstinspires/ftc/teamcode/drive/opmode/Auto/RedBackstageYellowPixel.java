@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -141,6 +142,10 @@ public class RedBackstageYellowPixel extends LinearOpMode {
         Larm.setDirection(DcMotor.Direction.REVERSE);
         sArm.setDirection(DcMotor.Direction.FORWARD);
 
+        Larm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sArm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -173,25 +178,40 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                 .turn(Math.toRadians(90))
                 .build();
         Trajectory left_traj2 = drive.trajectoryBuilder(left_trajTurn1.end())
-                .forward(3)
+                .forward(2)
                 .build();
         Trajectory left_traj3 = drive.trajectoryBuilder(left_traj2.end())
-                .back(8)
+                .back(15)
                 .build();
         TrajectorySequence left_trajTurn2 = drive.trajectorySequenceBuilder(left_traj3.end())
                 .turn(Math.toRadians(175))
                 .build();
         Trajectory left_traj4 = drive.trajectoryBuilder(left_trajTurn2.end())
-                .forward(24)
+                .forward(22)
                 .build();
-        TrajectorySequence left_trajTurn3 = drive.trajectorySequenceBuilder(left_traj4.end())
-                .turn(Math.toRadians(-90))
+        Trajectory left_traj5 = drive.trajectoryBuilder(left_traj4.end())
+                .strafeLeft(7)
                 .build();
-        Trajectory left_traj5 = drive.trajectoryBuilder(left_trajTurn3.end())
-                .forward(21)
+        TrajectorySequence arm_left = drive.trajectorySequenceBuilder(left_traj5.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
                 .build();
-        Trajectory left_traj6 = drive.trajectoryBuilder(left_traj5.end())
-                .strafeLeft(17)
+        Trajectory left_traj6 = drive.trajectoryBuilder(arm_left.end())
+                .strafeRight(29)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
+                .build();
+        Trajectory left_traj7 = drive.trajectoryBuilder(left_traj6.end())
+                .forward(12)
                 .build();
 
 
@@ -206,16 +226,31 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                 .turn(Math.toRadians(-90))
                 .build();
         Trajectory middle_traj3 = drive.trajectoryBuilder(middle_trajTurn1.end())
-                .forward(28)
+                .forward(37)
                 .build();
-        TrajectorySequence middle_trajTurn2 = drive.trajectorySequenceBuilder(middle_traj3.end())
-                .turn(Math.toRadians(-90))
+        /*Trajectory middle_traj4 = drive.trajectoryBuilder(middle_traj3.end())
+                .strafeLeft(5)
+                .build();*/
+        TrajectorySequence arm_mid = drive.trajectorySequenceBuilder(middle_traj3.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
                 .build();
-        Trajectory middle_traj4 = drive.trajectoryBuilder(middle_trajTurn2.end())
-                .forward(25)
+        Trajectory middle_traj5 = drive.trajectoryBuilder(arm_mid.end())
+                .strafeRight(24)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
                 .build();
-        Trajectory middle_traj5 = drive.trajectoryBuilder(middle_traj4.end())
-                .strafeLeft(12)
+        Trajectory middle_traj6 = drive.trajectoryBuilder(middle_traj5.end())
+                .forward(12)
                 .build();
 
         // -------------------- Right Trajectories -----------
@@ -232,19 +267,37 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                 .back(6)
                 .build();
         TrajectorySequence right_trajTurn2 = drive.trajectorySequenceBuilder(right_traj3.end())
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(-87.5))
                 .build();
         Trajectory right_traj4 = drive.trajectoryBuilder(right_trajTurn2.end())
-                .forward(24)
+                .forward(23)
                 .build();
-        TrajectorySequence right_trajTurn3 = drive.trajectorySequenceBuilder(right_traj4.end())
-                .turn(Math.toRadians(-90))
-                .build();
-        Trajectory right_traj5 = drive.trajectoryBuilder(right_trajTurn3.end())
-                .forward(17)
+        Trajectory right_traj5 = drive.trajectoryBuilder(right_traj4.end())
+                .strafeLeft(2)
                 .build();
         Trajectory right_traj6 = drive.trajectoryBuilder(right_traj5.end())
-                .strafeLeft(10)
+                .forward(2)
+                .build();
+        TrajectorySequence arm_right = drive.trajectorySequenceBuilder(right_traj6.end())
+                .addTemporalMarker(1, () -> {
+                    Door.setPosition(1);
+                })
+                .addTemporalMarker(0.3, () -> {
+                    Outake.setPower(-.23);
+                })
+                .addTemporalMarker(1, () -> {
+                    Outake.setPower(0);
+                })
+                .waitSeconds(2.5)
+                .build();
+        Trajectory right_traj7 = drive.trajectoryBuilder(arm_right.end())
+                .strafeRight(15)
+                .addTemporalMarker(0.5, () -> {
+                    Door.setPosition(0);
+                })
+                .build();
+        Trajectory right_traj8 = drive.trajectoryBuilder(right_traj7.end())
+                .forward(15)
                 .build();
 
 
@@ -272,10 +325,15 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(left_traj2);
                     drive.followTrajectory(left_traj3);
                     drive.followTrajectorySequence(left_trajTurn2);
+                    armUp(1350);
+                    smallUp(950);
                     drive.followTrajectory(left_traj4);
-                    drive.followTrajectorySequence(left_trajTurn3);
                     drive.followTrajectory(left_traj5);
+                    drive.followTrajectorySequence(arm_right);
+                    armDown(1350);
+                    smallDown(950);
                     drive.followTrajectory(left_traj6);
+                    drive.followTrajectory(left_traj7);
 
                     sleep(100000);
 
@@ -285,10 +343,15 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(middle_traj1);
                     drive.followTrajectory(middle_traj2);
                     drive.followTrajectorySequence(middle_trajTurn1);
+                    armUp(1350);
+                    smallUp(950);
                     drive.followTrajectory(middle_traj3);
-                    drive.followTrajectorySequence(middle_trajTurn2);
-                    drive.followTrajectory(middle_traj4);
+                    //drive.followTrajectory(middle_traj4);
+                    drive.followTrajectorySequence(arm_mid);
+                    armDown(1350);
+                    smallDown(950);
                     drive.followTrajectory(middle_traj5);
+                    drive.followTrajectory(middle_traj6);
 
 
 
@@ -303,10 +366,16 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(right_traj2);
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
+                    armUp(1350);
+                    smallUp(950);
                     drive.followTrajectory(right_traj4);
-                    drive.followTrajectorySequence(right_trajTurn3);
                     drive.followTrajectory(right_traj5);
                     drive.followTrajectory(right_traj6);
+                    drive.followTrajectorySequence(arm_right);
+                    armDown(1350);
+                    smallDown(950);
+                    drive.followTrajectory(right_traj7);
+                    drive.followTrajectory(right_traj8);
                     //armpose(-4);
 
 
@@ -641,7 +710,7 @@ public void encoderDriveArm(double speed,
         Rarm.setPower(-1);
         Larm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
+        while (-Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -663,7 +732,7 @@ public void encoderDriveArm(double speed,
         Rarm.setPower(1);
         Larm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
+        while (Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -682,8 +751,8 @@ public void encoderDriveArm(double speed,
 
         sArm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (-sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 
@@ -700,8 +769,8 @@ public void encoderDriveArm(double speed,
 
         sArm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 

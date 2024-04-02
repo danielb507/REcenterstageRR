@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -140,6 +141,10 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Rarm.setDirection(DcMotor.Direction.FORWARD);
         Larm.setDirection(DcMotor.Direction.REVERSE);
         sArm.setDirection(DcMotor.Direction.FORWARD);
+
+        Larm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        Rarm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sArm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         Larm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         Rarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -260,8 +265,6 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Trajectory right_traj6 = drive.trajectoryBuilder(right_trajTurn1.end())
                 .forward(90)
                 .build();
-
-
 
 
 
@@ -659,7 +662,7 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Rarm.setPower(-1);
         Larm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
+        while (-Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -667,7 +670,7 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Rarm.setPower(0);
         Larm.setPower(0);
 
-       // sleep(500);
+        // sleep(500);
 
     }
     public void armDown(double distance) {
@@ -681,7 +684,7 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Rarm.setPower(1);
         Larm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
+        while (Rarm.getCurrentPosition() < distance) {
             telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
             telemetry.update();
         }
@@ -689,7 +692,7 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
         Rarm.setPower(0);
         Larm.setPower(0);
 
-       // sleep(500);
+        // sleep(500);
 
     }
     public void smallUp(double distance) {
@@ -700,8 +703,8 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
 
         sArm.setPower(-1);
 
-        while (Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (-sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 
@@ -718,14 +721,14 @@ public class BlueAudienceYellowPixel extends LinearOpMode {
 
         sArm.setPower(1);
 
-        while (-Rarm.getCurrentPosition() < distance) {
-            telemetry.addData("Arm Encoder", Rarm.getCurrentPosition());
+        while (sArm.getCurrentPosition() < distance) {
+            telemetry.addData("smallArm Encoder", sArm.getCurrentPosition());
             telemetry.update();
         }
 
         sArm.setPower(0);
 
-       // sleep(500);
+        // sleep(500);
 
     }
 } // end class
