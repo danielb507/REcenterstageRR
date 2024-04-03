@@ -326,12 +326,12 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(left_traj3);
                     drive.followTrajectorySequence(left_trajTurn2);
                     armUp(1350);
-                    smallUp(950);
+                    smallUp(1040);
                     drive.followTrajectory(left_traj4);
                     drive.followTrajectory(left_traj5);
                     drive.followTrajectorySequence(arm_right);
                     armDown(1350);
-                    smallDown(950);
+                    smallDown(1040);
                     drive.followTrajectory(left_traj6);
                     drive.followTrajectory(left_traj7);
 
@@ -344,12 +344,12 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(middle_traj2);
                     drive.followTrajectorySequence(middle_trajTurn1);
                     armUp(1350);
-                    smallUp(950);
+                    smallUp(1040);
                     drive.followTrajectory(middle_traj3);
                     //drive.followTrajectory(middle_traj4);
                     drive.followTrajectorySequence(arm_mid);
                     armDown(1350);
-                    smallDown(950);
+                    smallDown(1040);
                     drive.followTrajectory(middle_traj5);
                     drive.followTrajectory(middle_traj6);
 
@@ -367,13 +367,13 @@ public class RedBackstageYellowPixel extends LinearOpMode {
                     drive.followTrajectory(right_traj3);
                     drive.followTrajectorySequence(right_trajTurn2);
                     armUp(1350);
-                    smallUp(950);
+                    smallUp(1040);
                     drive.followTrajectory(right_traj4);
                     drive.followTrajectory(right_traj5);
                     drive.followTrajectory(right_traj6);
                     drive.followTrajectorySequence(arm_right);
                     armDown(1350);
-                    smallDown(950);
+                    smallDown(1040);
                     drive.followTrajectory(right_traj7);
                     drive.followTrajectory(right_traj8);
                     //armpose(-4);
