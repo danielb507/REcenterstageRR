@@ -14,10 +14,10 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(30, 30, Math.toRadians(180), Math.toRadians(180), 14.75)
-                .setDimensions(17, 17)
-                .setStartPose(new Pose2d(-35, 60, Math.toRadians(-90)))
+                .setDimensions(17.8, 17.8)
+                .setStartPose(new Pose2d(-60, -60, Math.toRadians(-90)))
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(-32, 65, Math.toRadians(90)))
+                        drive.trajectorySequenceBuilder(new Pose2d(-60, -60, Math.toRadians(90)))
 //-32,65 (90) //10,60, (90)
 
 
@@ -92,12 +92,11 @@ public class MeepMeepTesting {
                                 //Right(MeepMeep) Parking BlueRight (Actual)
 
 
-                                .lineToLinearHeading(new Pose2d(-36, 30, Math.toRadians(0)))
-                                .splineToConstantHeading(new Vector2d(-36, 12), Math.toRadians(0))
-                                .lineToLinearHeading(new Pose2d(35, 12, Math.toRadians(0)))
-                                .lineToLinearHeading(new Pose2d(45, 40, Math.toRadians(0)))
-                                .lineToLinearHeading(new Pose2d(45, 10, Math.toRadians(0)))
-                                .lineToLinearHeading(new Pose2d(55, 10, Math.toRadians(0)))
+                                .lineToLinearHeading(new Pose2d(-60, 10, Math.toRadians(0)))
+                                .lineToLinearHeading(new Pose2d(-15, 10, Math.toRadians(0)))
+                                .lineToLinearHeading(new Pose2d(-15, -60, Math.toRadians(0)))
+                                .lineToLinearHeading(new Pose2d(60, -15, Math.toRadians(180)))
+
 
 
 
